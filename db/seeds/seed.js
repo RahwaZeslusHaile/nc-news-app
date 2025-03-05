@@ -15,6 +15,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then(() => {
       const formattedTopics = topicData.map((topic) => {
         return [topic.slug, topic.description, topic.img_url];
+        
+        
       });
       const sqlString = format(
         `INSERT INTO topics (slug, description, img_url) VALUES %L RETURNING *`,
@@ -22,6 +24,10 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       );
       return db.query(sqlString);
     })
+
+
+
+
     .then(()=>{
       const formattedUsers = userData.map((user) => {
         return [user.username, user.name, user.avatar_url];
@@ -29,6 +35,9 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       const sqlString = format(`INSERT INTO users(username, name, avatar_url) VALUES %L RETURNING *`, formattedUsers);
       return db.query(sqlString);
     })
+
+
+    
     .then(()=>{
       const formattedArticles = articleData.map((article) =>
         [article.title,article.topic, article.author,article.body,new Date(article.created_at).toISOString(), article.votes, article.article_img_url
@@ -40,15 +49,20 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query(sqlString);
 })
     
-.then(() => {
- 
-  const formattedComments = commentData.map((comment) => [
-    comment.article_id,  
+.then(({rows}) => {
+  console.log('rows======>',rows)
+  
+ const commentLookUp = createLookupObject(rows,"title","article_id")
+  const formattedComments = commentData.map((comment) => {
+    return[
+   commentLookUp[comment.title],  
+   //comment.article_id,
     comment.body,
     comment.votes,
     comment.author, 
     new Date(comment.created_at).toISOString() 
-  ]);
+  ]});
+  //console.log('formatted comments=====>',formattedComments)
   const sqlString = format(
     `INSERT INTO comments (article_id, body, votes, author, created_at) VALUES %L RETURNING *`,
     formattedComments

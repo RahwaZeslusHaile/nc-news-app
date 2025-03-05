@@ -4,12 +4,12 @@ const db = require("../../db/connection");
 //   if (!created_at) return { ...otherProperties };
 //   return { created_at: new Date(created_at), ...otherProperties };
 // };
-function createLookupObject(databaseRow = [], targetKey, targetValue) {
-  const lookup = {}
-  databaseRow.forEach((data) => {
-      lookup[data[targetKey]] = data[targetValue]
-  })
-  return lookup
+function createLookupObject(databaseRow, targetKey, targetValue) {
+  return databaseRow.reduce((acc, data) => {
+    acc[data[targetKey]] = data[targetValue];
+    return acc;
+  }, {});
 }
+
 
 module.exports = { createLookupObject }
