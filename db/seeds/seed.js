@@ -50,7 +50,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
 })
     
 .then(({rows}) => {
-  console.log('rowss=====>',rows)
+  
   
  const commentLookUp = createLookupObject(rows,"title","article_id")
  //console.log('formatted comments=====>',commentLookUp)
