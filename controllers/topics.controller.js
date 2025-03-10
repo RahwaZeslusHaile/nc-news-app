@@ -1,0 +1,13 @@
+const endpoints = require('../endpoints.json')
+const {selectTopics} = require('../models/topics.model')
+ 
+exports.getApiDocumentation = (request, response, next) => {
+    response.status(200).send({ endpoints });
+  };
+
+
+exports.getTopics=(request,response,next)=>{
+selectTopics().then((topics)=>{
+    response.status(200).send({topics})
+}).catch(next)
+ }

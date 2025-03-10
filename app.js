@@ -1,13 +1,17 @@
 const express = require("express");
 const app = express();
-const { getApiDocumentation } = require("./controllers/APIController");
-
+const { getApiDocumentation ,getTopics} = require("./controllers/topics.controller");
+const{handlePSQLErrors,handleCustomErrors,handleServerErrors}= require('./error_handler')
 app.use(express.json());
 
 app.get("/api", getApiDocumentation);
+app.get("/api/topics", getTopics);
+app.all('*',(request,response,next)=>{
+  response.status(404).send({ msg: 'Not Found' });
+})
 
-app.use((error, request, response, next) => {
-  response.status(500).send({ error: "Error reading documentation file" });
-});
+app.use(handlePSQLErrors);
+app.use(handleCustomErrors);
+app.use(handleServerErrors);
 
 module.exports = app;
