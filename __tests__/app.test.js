@@ -12,7 +12,6 @@ afterAll(()=>{
   return db.end()
 })
 
-/* Set up your beforeEach & afterAll functions here */
 
 describe("GET /api", () => {
   test("200: Responds with an object detailing the documentation for each endpoint", () => {
@@ -25,3 +24,34 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe('GET/api/topics',()=>{
+  test('200: Responds with an array of topic object with slug and description',()=>{
+    return request(app)
+    .get('/api/topics')
+    .expect(200)
+    .then(({body})=>{
+       const topics  = body.topics
+       expect(Array.isArray(topics)).toBe(true),
+         expect(topics.length).toBeGreaterThan(0),
+       topics.forEach((topic)=>{
+        expect(typeof topic.slug).toBe('string'),
+        expect(typeof topic.description).toBe('string')
+        })
+
+       })
+    })
+
+    test('404: responds with an error if the route is incorrect',()=>{
+      return request(app)
+      .get('/api/t0pics')
+      .expect(404)
+      .then(({body})=>{
+        expect(body.msg).toBe('Not Found');
+      })
+    })
+  })
+
+
+  
+  
