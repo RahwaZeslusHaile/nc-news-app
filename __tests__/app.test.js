@@ -52,6 +52,40 @@ describe('GET/api/topics',()=>{
     })
   })
 
+describe('GET/api/articles/:article_id',()=>{
+  test('200: Responds with an article object with the expected properties',()=>{
+    return request(app)
+    .get('/api/articles/3')
+    .expect(200)
+    .then(({body})=>{
+      
+      const article = body.article
+      expect(article).toHaveProperty('author');
+      expect(article).toHaveProperty('title');
+      expect(article).toHaveProperty('article_id');
+      expect(article).toHaveProperty('body');
+      expect(article).toHaveProperty('topic');
+      expect(article).toHaveProperty('created_at');
+      expect(article).toHaveProperty('votes');
+      expect(article).toHaveProperty('article_img_url');
+    });
+  });
 
-  
-  
+  test('GET /api/articles/:article_id returns 404 for non-existent article', () => {
+    return request(app)
+        .get('/api/articles/999')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Article Not Found');
+        });
+});
+
+test('GET /api/articles/:article_id returns 400 for invalid article_id format', () => {
+    return request(app)
+        .get('/api/articles/Rahwa')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Bad Request');
+        });
+});
+})
