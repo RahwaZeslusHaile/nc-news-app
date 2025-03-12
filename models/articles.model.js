@@ -1,5 +1,5 @@
 const db =require('../db/connection')
-const articles = require('../db/data/test-data/articles')
+
 
 exports.selectArticleById=(article_id)=>{
     
