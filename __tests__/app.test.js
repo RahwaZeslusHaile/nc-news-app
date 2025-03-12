@@ -180,7 +180,7 @@ describe('POST /api/articles/:article_id/comments', () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        console.log(body)
+       
         expect(typeof body.comment.comment_id).toBe('number');
         expect(typeof body.comment.article_id).toBe('number');
         expect(typeof body.comment.body).toBe('string');;
@@ -214,6 +214,87 @@ describe('POST /api/articles/:article_id/comments', () => {
             });
         });
       });
+
+
+
+      describe('PATCH /api/articles/:article_id', () => {
+        test('200: should increment the article votes when given a positive inc_votes value', () => {
+            return request(app)
+                .patch('/api/articles/1')
+                .send({ inc_votes: 1 })
+                .expect(200)
+                .then(({ body }) => {
+                  
+                    expect(body.article).toMatchObject({
+                        article_id: 1,
+                        title: 'Living in the shadow of a great man',
+                        body: 'I find this existence challenging',
+                        votes: 101, 
+                        topic: 'mitch',
+                        author: 'butter_bridge',
+                        created_at: '2020-07-09T20:11:00.000Z'
+                  });
+                });
+        });
+    
+        test('200: should decrement the article votes when given a negative inc_votes value', () => {
+            return request(app)
+                .patch('/api/articles/1')
+                .send({ inc_votes: -10 })
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.article).toMatchObject({
+                        article_id: 1,
+                        title: 'Living in the shadow of a great man',
+                        body: 'I find this existence challenging',
+                        votes: 90, 
+                        topic: 'mitch',
+                        author: 'butter_bridge',
+                        created_at:'2020-07-09T20:11:00.000Z'
+                    });
+                });
+        });
+    
+        test('400: should respond an error when inc_votes is missing', () => {
+            return request(app)
+                .patch('/api/articles/1')
+                .send({})
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Invalid vote value');
+                });
+        });
+    
+        test('400: should respond an error when inc_votes is not a number', () => {
+            return request(app)
+                .patch('/api/articles/1')
+                .send({ inc_votes: 'invalid' })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Invalid vote value');
+                });
+        });
+    
+        test('404: should respond an error when article_id does not exist', () => {
+            return request(app)
+                .patch('/api/articles/9999')
+                .send({ inc_votes: 1 })
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe("Article not found");
+                });
+        });
+    
+        test('400: should respond an error when article_id is invalid', () => {
+            return request(app)
+                .patch('/api/articles/not-a-valid-id')
+                .send({ inc_votes: 1 })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request');
+                });
+        });
+    });
       
       
       
