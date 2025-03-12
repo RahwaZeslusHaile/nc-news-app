@@ -5,12 +5,13 @@ const seed = require('../db/seeds/seed')
 const app = require('../app')
 const request = require('supertest'); 
 /* Set up your test imports here */
-beforeEach(()=>{
-  return seed(data)
-})
 afterAll(()=>{
   return db.end()
 })
+beforeEach(()=>{
+  return seed(data)
+})
+
 
 
 describe("GET /api", () => {
