@@ -4,14 +4,14 @@ const data = require('../db/data/test-data/index')
 const seed = require('../db/seeds/seed')
 const app = require('../app')
 const request = require('supertest'); 
-const { string } = require("pg-format");
 /* Set up your test imports here */
-beforeEach(()=>{
-  return seed(data)
-})
 afterAll(()=>{
   return db.end()
 })
+beforeEach(()=>{
+  return seed(data)
+})
+
 
 
 describe("GET /api", () => {
@@ -61,14 +61,14 @@ describe('GET/api/articles/:article_id',()=>{
     .then(({body})=>{
       
       const article = body.article
-      expect(article).toHaveProperty('author');
-      expect(article).toHaveProperty('title');
-      expect(article).toHaveProperty('article_id');
-      expect(article).toHaveProperty('body');
-      expect(article).toHaveProperty('topic');
-      expect(article).toHaveProperty('created_at');
-      expect(article).toHaveProperty('votes');
-      expect(article).toHaveProperty('article_img_url');
+      expect(typeof article.author).toBe('string');
+      expect(typeof article.title).toBe('string');
+      expect(typeof article.article_id).toBe('number');
+      expect(typeof article.body).toBe('string');
+      expect(typeof article.topic).toBe('string');
+      expect(typeof article.created_at).toBe('string');
+      expect(typeof article.votes).toBe('number');
+      expect(typeof article.article_img_url).toBe('string');
     });
   });
 
@@ -81,7 +81,7 @@ describe('GET/api/articles/:article_id',()=>{
         });
 });
 
-test('GET /api/articles/:article_id returns 400 for invalid article_id format', () => {
+test('GET /api/articles/:article_id responds 400 for invalid article_id format', () => {
     return request(app)
         .get('/api/articles/Rahwa')
         .expect(400)
@@ -97,11 +97,11 @@ test('GET /api/articles/:article_id returns 400 for invalid article_id format', 
              .get('/api/articles')
               .expect(200)
                .then(({ body }) => {
-                  const { article } = body;
-                  console.log(article)
-                  expect(Array.isArray(article)).toBe(true);
-                  expect(article.length).toBeGreaterThan(0);
-              article.forEach((article) => {
+                  const articles = body.article;
+                  
+                  expect(Array.isArray(articles)).toBe(true);
+                  expect(articles.length).toBeGreaterThan(0);
+              articles.forEach((article) => {
                   expect(typeof article.article_id).toBe('number');
                   expect(typeof article.title).toBe('string');
                   expect(typeof article.topic).toBe('string');
@@ -123,7 +123,59 @@ test('GET /api/articles/:article_id returns 400 for invalid article_id format', 
               expect(body.msg).toBe('Not Found');
             })
           })
-        })                
+        })    
+        
+        
+
+
+
+        describe('GET /api/articles/:article_id/comments', () => {
+          test('200: responds with an array of comments for the given article_id with an expected properties', () => {
+              return request(app)
+               .get('/api/articles/3/comments')
+                .expect(200)
+                 .then(({ body }) => {
+                  
+                    const { comments} = body;
+                    expect(Array.isArray(comments)).toBe(true);
+                    expect(comments.length).toBeGreaterThan(0);
+                    comments.forEach((comment) => {
+                    expect(typeof comment.comment_id).toBe('number');
+                    expect(typeof comment.article_id).toBe('number');
+                    expect(typeof comment.author).toBe('string');
+                    expect(typeof comment.created_at).toBe('string');
+                    expect(typeof comment.body).toBe('string');
+                    expect(typeof comment.votes).toBe('number');
+                    
+                  });
+                });
+              })
+                   
+            test('404: responds with "Article not found" if the route is incorrect',()=>{
+              return request(app)
+              .get('/api/articles/9996/comments')
+              .expect(404)
+              .then(({body})=>{
+                expect(body.msg).toBe('Comments Not Found');
+              })
+            })
+            
+          test('400: responds "Bad request" for an invalid article_id ', () => {
+            return request(app)
+                .get('/api/articles/i/comments')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request');
+                });
+        });
+      
+        
+      }) 
+
+      
+
+
+
                               
                              
                   
