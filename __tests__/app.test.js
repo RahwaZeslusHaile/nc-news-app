@@ -171,7 +171,51 @@ test('GET /api/articles/:article_id responds 400 for invalid article_id format',
       
         
       }) 
+    
+describe('POST /api/articles/:article_id/comments', () => {
+  test('201: adds a comment for the specified article', () => {
+    const newComment = { username: 'lurker', body: 'Great article!' };
+    return request(app)
+      .post('/api/articles/3/comments') 
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        console.log(body)
+        expect(typeof body.comment.comment_id).toBe('number');
+        expect(typeof body.comment.article_id).toBe('number');
+        expect(typeof body.comment.body).toBe('string');;
+        expect(body.comment.author).toEqual('lurker');
+        expect(typeof body.comment.body).toBe('string');
+        expect(typeof body.comment.created_at).toBe('string');
+      });
 
+    })
+
+      
+        test('400: responds with error when username or body is missing', () => {
+          const newComment = { body: 'Great article!' }; 
+          return request(app)
+            .post('/api/articles/3/comments')
+            .send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Missing required fields: article_id, username, and body');
+            });
+        });
+      
+        test('404: responds with error when article_id does not exist', () => {
+          const newComment = { username: 'Rahwa', body: 'Great article!' };
+          return request(app)
+            .post('/api/articles/9999/comments')
+            .send(newComment)
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Article not found');
+            });
+        });
+      });
+      
+      
       
 
 
