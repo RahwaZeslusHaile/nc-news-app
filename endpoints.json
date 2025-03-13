@@ -82,5 +82,36 @@
       "created_at": "2020-07-09T20:11:00.000Z"
     }
   }
+},
+
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment based on the provided comment_id.",
+    "responses": {
+      "204": {
+        "description": "Successfully deleted the comment. No content is returned.",
+        "example": {
+          "deleted": [
+            {
+              "comment_id": 1,
+              "article_id": 9,
+              "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              "votes": 16,
+              "author": "butter_bridge",
+              "created_at": "2020-04-06T12:17:00.000Z"
+            }
+          ]
+        }
+      },
+      "400": {
+        "description": "Bad request. The comment_id is not a valid number."
+      },
+      "404": {
+        "description": "Not found. No comment was found with the provided comment_id."
+      }
+    }
+  }
 }
-}
+
+
+
+

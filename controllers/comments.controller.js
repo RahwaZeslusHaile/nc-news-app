@@ -1,4 +1,4 @@
-const { fetchCommentsByArticleId,addCommentForArticle } = require('../models/comments.model');
+const { fetchCommentsByArticleId,addCommentForArticle,deleteComment } = require('../models/comments.model');
 
 exports.getCommentsByArticleId = (request, response, next) => {
     const { article_id } = request.params;
@@ -31,4 +31,29 @@ exports.getCommentsByArticleId = (request, response, next) => {
             next(error);
           });
       };
+     
+
+      exports.removeCommentById = (request, response, next) => {
+        const { comment_id } = request.params;
+
+        if (!comment_id) {
+            return response.status(400).send({ msg: 'Bad Request' });
+        }
+    
+        deleteComment(comment_id)
+            .then((deletedComment) => {
+               
+                if (!deletedComment) {
+                    return response.status(404).send({ msg: 'Comment not found' });
+                }
+                
+                response.status(204).send();
+            })
+            .catch((error) => {
+                
+                next(error);
+            });
+    };
+    
+      
         
