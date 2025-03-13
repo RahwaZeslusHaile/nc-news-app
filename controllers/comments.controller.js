@@ -36,9 +36,7 @@ exports.getCommentsByArticleId = (request, response, next) => {
       exports.removeCommentById = (request, response, next) => {
         const { comment_id } = request.params;
 
-        if (!comment_id) {
-            return response.status(400).send({ msg: 'Bad Request' });
-        }
+       
     
         deleteComment(comment_id)
             .then((deletedComment) => {
