@@ -4,6 +4,7 @@ const { getApiDocumentation ,getTopics} = require("./controllers/topics.controll
 const{getArticlesById,getArticles,updateArticleVotes}= require('./controllers/articles.controller')
 const {getCommentsByArticleId,postCommentsByArticleId,removeCommentById} = require('./controllers/comments.controller')
 const{handlePSQLErrors,handleCustomErrors,handleServerErrors}= require('./error_handler')
+const{getAllUsers}= require('./controllers/users.controller')
 
 
 
@@ -17,7 +18,11 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments",postCommentsByArticleId)
 app.patch("/api/articles/:article_id", updateArticleVotes);
 app.delete("/api/comments/:comment_id",removeCommentById)
+app.get("/api/users", getAllUsers);
+
+
 app.all('*',(request,response,next)=>{
+
   response.status(404).send({ msg: 'Not Found' });
 })
 

@@ -4,7 +4,8 @@ const data = require('../db/data/test-data/index')
 const seed = require('../db/seeds/seed')
 const app = require('../app')
 const request = require('supertest'); 
-/* Set up your test imports here */
+
+
 afterAll(()=>{
   return db.end()
 })
@@ -336,11 +337,35 @@ test('404: should respond an error for an invalid comment_id', () => {
     });
 });
     })
-      
-      
 
-
-
-                              
-                             
-                  
+    describe('GET /api/users', () => {
+  
+      test('200: should return an array of users with the correct properties', () => {
+        return request(app)
+          .get('/api/users')
+          .expect(200)
+          .then(({ body }) => {
+            const users = body.users
+            expect(Array.isArray(users)).toBe(true);
+            expect(users.length).toBeGreaterThan(0);
+            users.forEach(user => {
+              
+        expect(typeof user.username).toBe('string'),
+        expect(typeof user.name).toBe('string')
+        expect(typeof user.avatar_url).toBe('string')
+        
+                })
+              
+            });
+          });
+          test('404: responds with an error if the route is incorrect',()=>{
+            return request(app)
+            .get('/api/usors')
+            .expect(404)
+            .then(({body})=>{
+              expect(body.msg).toBe('Not Found');
+            })
+          })
+         
+      })      
+    
