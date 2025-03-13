@@ -150,13 +150,23 @@ test('GET /api/articles/:article_id responds 400 for invalid article_id format',
                   });
                 });
               })
+              test('200: should return an empty array when an article exists but has no comments', () => {
+                return request(app)
+                  .get('/api/articles/2/comments') 
+                  .expect(200)
+                  .then(({ body }) => {
+                    
+                    expect(body.comments).toEqual([]); 
+                  });
+              });
+              
                    
             test('404: responds with "Article not found" if the route is incorrect',()=>{
               return request(app)
               .get('/api/articles/9996/comments')
               .expect(404)
               .then(({body})=>{
-                expect(body.msg).toBe('Comments Not Found');
+                expect(body.msg).toBe('Article Not Found');
               })
             })
             
@@ -180,13 +190,11 @@ describe('POST /api/articles/:article_id/comments', () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-       
-        expect(typeof body.comment.comment_id).toBe('number');
-        expect(typeof body.comment.article_id).toBe('number');
-        expect(typeof body.comment.body).toBe('string');;
+      
+        expect(body.comment.article_id).toBe(3);
         expect(body.comment.author).toEqual('lurker');
-        expect(typeof body.comment.body).toBe('string');
-        expect(typeof body.comment.created_at).toBe('string');
+        expect(body.comment.body).toBe('Great article!');
+        expect(new Date(body.comment.created_at).toString()).not.toBe('Invalid Date');
       });
 
     })
@@ -199,7 +207,7 @@ describe('POST /api/articles/:article_id/comments', () => {
             .send(newComment)
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).toBe('Missing required fields: article_id, username, and body');
+              expect(body.msg).toBe('Missing required field: username');
             });
         });
       
@@ -295,7 +303,39 @@ describe('POST /api/articles/:article_id/comments', () => {
                 });
         });
     });
-      
+describe('DELETE /api/comments/:comment_id ', () => {
+  test('204: should delete a comment and return 204', () => {
+  return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+    .then(() => {
+      return request(app)
+        .get('/api/comments/1') 
+        .expect(404);
+     
+  });
+
+});
+
+
+test('404:should respond an error for a non-existing comment', () => {
+  return request(app)
+    .delete('/api/comments/999')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Comment not found');
+    });
+});
+
+test('404: should respond an error for an invalid comment_id', () => {
+  return request(app)
+    .delete('/api/comments/abc')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Bad Request');
+    });
+});
+    })
       
       
 
