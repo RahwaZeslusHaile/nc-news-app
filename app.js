@@ -1,13 +1,13 @@
 const express = require("express");
 const cors = require('cors');
-app.use(cors());
+
 const app = express();
 const { getApiDocumentation ,getTopics} = require("./controllers/topics.controller");
 const{getArticlesById,updateArticleVotes,getArticles}= require('./controllers/articles.controller')
 const {getCommentsByArticleId,postCommentsByArticleId,removeCommentById} = require('./controllers/comments.controller')
 const{handlePSQLErrors,handleCustomErrors,handleServerErrors}= require('./error_handler')
 const{getAllUsers}= require('./controllers/users.controller')
-
+app.use(cors());
 
 app.use(express.json());
 
